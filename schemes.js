@@ -34,31 +34,59 @@
 
   const STYLE_ID = "__colored_background_style__";
 
+  // Escape hatch:
+  //   data-colored-bg="off" disables theming for this element and its subtree.
+  //   data-colored-bg="on" re-enables theming for this element and its subtree.
+  //
+  // Example:
+  //   <body data-colored-bg="off">
+  //     <div class="container" data-colored-bg="on">
+  const OFF_SELECTOR = `[data-colored-bg="off"]`;
+  const ON_SELECTOR = `[data-colored-bg="on"]`;
+
+  const unthemeableElementClauses =
+    `:not(html):not(body):not(img):not(video):not(picture):not(canvas):not(iframe):not(svg)`;
+
   // Build the CSS that paints the page like a terminal pane: one background
   // showing through everywhere, one foreground color for all text.
   function buildCss(scheme) {
     if (!scheme) return "";
     const { bg, fg } = scheme;
-    const themedElementSelector =
-      `*:not(html):not(body):not(img):not(video):not(picture):not(canvas):not(iframe):not(svg)` +
-      `:not(.scriptor-component-code-block):not(.scriptor-component-code-block *)` +
-      `:not(#m365-chat-input-shared-wrapper):not(#m365-chat-input-shared-wrapper *)`;
+    const baseElementSelector = `*${unthemeableElementClauses}`;
+
+    // Normal page theming: active under body, except inside an "off" subtree.
+    const bodyElementSelector =
+      `${baseElementSelector}:not(${OFF_SELECTOR}):not(${OFF_SELECTOR} *)`;
+
+    // Explicit re-enable: active under an "on" subtree, even if an ancestor is "off".
+    const onElementSelector = `${ON_SELECTOR} ${baseElementSelector}`;
+
     return [
-      `html, body {`,
+      `body:not(${OFF_SELECTOR}),`,
+      `${ON_SELECTOR} {`,
       `  min-height: 100% !important;`,
       `  background: ${bg} !important;`,
       `  color: ${fg} !important;`,
       `}`,
       // Let the page-level background show through every element (terminal-style).
-      `${themedElementSelector},`,
-      `${themedElementSelector}::before,`,
-      `${themedElementSelector}::after {`,
+      `body:not(${OFF_SELECTOR}) ${bodyElementSelector},`,
+      `body:not(${OFF_SELECTOR}) ${bodyElementSelector}::before,`,
+      `body:not(${OFF_SELECTOR}) ${bodyElementSelector}::after,`,
+      `${onElementSelector},`,
+      `${onElementSelector}::before,`,
+      `${onElementSelector}::after {`,
       `  background: transparent !important;`,
       `}`,
       // Force a single foreground color, including links.
-      `${themedElementSelector} { color: ${fg} !important; }`,
+      `body:not(${OFF_SELECTOR}) ${bodyElementSelector},`,
+      `${ON_SELECTOR},`,
+      `${onElementSelector} {`,
+      `  color: ${fg} !important;`,
+      `}`,
       // Keep form controls readable against the new background.
-      `${themedElementSelector}:is(input, textarea, select, button) {`,
+      `body:not(${OFF_SELECTOR}) ${bodyElementSelector}:is(input, textarea, select, button),`,
+      `${ON_SELECTOR}:is(input, textarea, select, button),`,
+      `${onElementSelector}:is(input, textarea, select, button) {`,
       `  background-color: rgba(127, 127, 127, 0.2) !important;`,
       `  border-color: ${fg} !important;`,
       `}`,

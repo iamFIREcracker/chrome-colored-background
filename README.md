@@ -61,3 +61,24 @@ The choice is saved **per-origin** and re-applied on reload/navigation
 
 Edit the `SCHEMES` map in `schemes.js`. Each entry is `{ name, bg, fg }`
 with hex colors; index `0` is `null` (reset).
+
+## Escape hatch (for sites you control)
+
+The themer flattens almost everything to one background + one foreground.
+On a site whose HTML you own, you can control theming with:
+
+- `data-colored-bg="off"` — disables theming for this element and its subtree
+- `data-colored-bg="on"` — re-enables theming for this element and its subtree
+
+Example:
+
+```html
+<body data-colored-bg="off">
+  <div class="container" data-colored-bg="on">
+    <!-- this container will be themed even though body is off -->
+  </div>
+</body>
+```
+
+This lets you keep the page body in its original colors while theming specific
+sections, or vice versa.
