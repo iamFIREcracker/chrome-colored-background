@@ -4,9 +4,16 @@ A small Chrome (Manifest V3) extension that recolors the current page's
 foreground/background like a tmux pane. Inspired by these tmux bindings:
 
 ```
-bind 0 select-pane -P "bg=default,fg=default"
+# Colored panes
+bind 0 select-pane -P "default"
 bind 1 select-pane -P "bg=color1,fg=color15"
-...
+bind 2 select-pane -P "bg=color10,fg=color0"
+bind 3 select-pane -P "bg=color11,fg=color0"
+bind 4 select-pane -P "bg=color4,fg=color15"
+bind 5 select-pane -P "bg=color5,fg=color15"
+bind 6 select-pane -P "bg=color6,fg=color15"
+bind 7 select-pane -P "bg=color15,fg=color0"
+bind 8 select-pane -P "bg=color0,fg=color15"
 ```
 
 ## Usage
