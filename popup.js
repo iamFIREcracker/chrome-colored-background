@@ -78,17 +78,29 @@
     });
   }
 
+  function previewScheme(scheme) {
+    if (scheme) return resolveScheme(scheme);
+
+    const osThemeIsDark =
+      typeof matchMedia === "function" &&
+      matchMedia("(prefers-color-scheme: dark)").matches;
+
+    return osThemeIsDark
+      ? { name: "default", bg: "#020202", fg: "#f4f4f4" }
+      : { name: "default", bg: "#f4f4f4", fg: "#020202" };
+  }
+
   function buildGrid() {
     const grid = document.getElementById("grid");
     Object.keys(SCHEMES).forEach((key) => {
       const i = Number(key);
       const scheme = SCHEMES[i];
-      const preview = resolveScheme(scheme);
+      const preview = previewScheme(scheme);
       const el = document.createElement("div");
       el.className = "swatch";
       el.dataset.idx = i;
-      el.style.background = preview ? preview.bg : "#2b2b2b";
-      el.style.color = preview ? preview.fg : "#f4f4f4";
+      el.style.background = preview.bg;
+      el.style.color = preview.fg;
       el.innerHTML =
         `<span class="num">${i}</span>` +
         `<span class="label">${scheme ? scheme.name : "default"}</span>`;
@@ -98,16 +110,21 @@
   }
 
   document.addEventListener("keydown", (e) => {
-    if (SCHEMES[e.key]) {
+    if (Object.prototype.hasOwnProperty.call(SCHEMES, e.key)) {
       e.preventDefault();
       apply(Number(e.key));
     }
   });
 
   if (typeof matchMedia === "function") {
-    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", async () => {
       document.getElementById("grid").textContent = "";
       buildGrid();
+
+      if (originKey) {
+        const data = await chrome.storage.local.get(originKey);
+        markActive(data[originKey] ?? 0);
+      }
     });
   }
 
