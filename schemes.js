@@ -7,6 +7,8 @@
 //   bind 4 -> bg=color4  fg=color15          blue      / bright white
 //   bind 5 -> bg=color5  fg=color15          magenta   / bright white
 //   bind 6 -> bg=color6  fg=color15          cyan      / bright white
+//   bind 7 -> bg=color15 fg=color0           light     / black
+//   bind 8 -> bg=color0  fg=color15          dark      / bright white
 //
 // Palette (256-color names -> hex):
 //   color0  black         #020202
@@ -26,27 +28,15 @@
     4: { name: "blue", bg: "#3344dd", fg: "#f4f4f4" },
     5: { name: "magenta", bg: "#8a148a", fg: "#f4f4f4" },
     6: { name: "cyan", bg: "#008a8a", fg: "#f4f4f4" },
-    7: { name: "reverse", reverseOsTheme: true },
+    7: { name: "light", bg: "#f4f4f4", fg: "#020202" },
+    8: { name: "dark", bg: "#020202", fg: "#f4f4f4" },
   };
 
   const STYLE_ID = "__colored_background_style__";
 
-  function resolveScheme(scheme) {
-    if (!scheme || !scheme.reverseOsTheme) return scheme;
-
-    const osThemeIsDark =
-      typeof matchMedia === "function" &&
-      matchMedia("(prefers-color-scheme: dark)").matches;
-
-    return osThemeIsDark
-      ? { name: "reverse", bg: "#f4f4f4", fg: "#020202" } // reverse of dark: black on white
-      : { name: "reverse", bg: "#020202", fg: "#f4f4f4" }; // reverse of light: white on black
-  }
-
   // Build the CSS that paints the page like a terminal pane: one background
   // showing through everywhere, one foreground color for all text.
   function buildCss(scheme) {
-    scheme = resolveScheme(scheme);
     if (!scheme) return "";
     const { bg, fg } = scheme;
     const themedElementSelector =
@@ -75,7 +65,7 @@
     ].join("\n");
   }
 
-  const api = { SCHEMES, STYLE_ID, buildCss, resolveScheme };
+  const api = { SCHEMES, STYLE_ID, buildCss };
   if (typeof self !== "undefined") self.COLORED_BG = api;
   if (typeof window !== "undefined") window.COLORED_BG = api;
 })();

@@ -1,7 +1,7 @@
 // Popup: a tmux-style picker. Open it (toolbar click or Alt+W), then
-// press 0-7 (or click a swatch) to recolor the current page.
+// press 1-8 (or click a swatch) to recolor the current page; 0 resets.
 (function () {
-  const { SCHEMES, STYLE_ID, buildCss, resolveScheme } = window.COLORED_BG;
+  const { SCHEMES, STYLE_ID, buildCss } = window.COLORED_BG;
 
   let tab = null;
   let originKey = null;
@@ -79,32 +79,20 @@
     });
   }
 
-  function previewScheme(scheme) {
-    if (scheme) return resolveScheme(scheme);
-
-    const osThemeIsDark =
-      typeof matchMedia === "function" &&
-      matchMedia("(prefers-color-scheme: dark)").matches;
-
-    return osThemeIsDark
-      ? { name: "default", bg: "#020202", fg: "#f4f4f4" }
-      : { name: "default", bg: "#f4f4f4", fg: "#020202" };
-  }
-
   function buildGrid() {
     const grid = document.getElementById("grid");
     Object.keys(SCHEMES).forEach((key) => {
       const i = Number(key);
       const scheme = SCHEMES[i];
-      const preview = previewScheme(scheme);
+      if (!scheme) return;
       const el = document.createElement("div");
       el.className = "swatch";
       el.dataset.idx = i;
-      el.style.background = preview.bg;
-      el.style.color = preview.fg;
+      el.style.background = scheme.bg;
+      el.style.color = scheme.fg;
       el.innerHTML =
         `<span class="num">${i}</span>` +
-        `<span class="label">${scheme ? scheme.name : "default"}</span>`;
+        `<span class="label">${scheme.name}</span>`;
       el.addEventListener("click", () => apply(i));
       grid.appendChild(el);
     });
@@ -116,18 +104,6 @@
       apply(Number(e.key));
     }
   });
-
-  if (typeof matchMedia === "function") {
-    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", async () => {
-      document.getElementById("grid").textContent = "";
-      buildGrid();
-
-      if (originKey) {
-        const data = await chrome.storage.local.get(originKey);
-        markActive(data[originKey] ?? 0);
-      }
-    });
-  }
 
   (async function init() {
     buildGrid();

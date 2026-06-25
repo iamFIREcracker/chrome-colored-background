@@ -19,10 +19,8 @@
   }
 
   const key = "scheme:" + location.origin;
-  let activeIdx = null;
 
   function applyScheme(idx) {
-    activeIdx = idx;
     const scheme = idx == null ? null : SCHEMES[idx];
     setStyle(buildCss(scheme));
   }
@@ -38,11 +36,4 @@
     if (area !== "local" || !(key in changes)) return;
     applyScheme(changes[key].newValue);
   });
-
-  // If option 7 is active, re-resolve it when the OS theme changes.
-  if (typeof matchMedia === "function") {
-    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-      if (Number(activeIdx) === 7) applyScheme(activeIdx);
-    });
-  }
 })();
