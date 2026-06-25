@@ -26,13 +26,27 @@
     4: { name: "blue", bg: "#3344dd", fg: "#f4f4f4" },
     5: { name: "magenta", bg: "#8a148a", fg: "#f4f4f4" },
     6: { name: "cyan", bg: "#008a8a", fg: "#f4f4f4" },
+    7: { name: "reverse", reverseOsTheme: true },
   };
 
   const STYLE_ID = "__colored_background_style__";
 
+  function resolveScheme(scheme) {
+    if (!scheme || !scheme.reverseOsTheme) return scheme;
+
+    const osThemeIsDark =
+      typeof matchMedia === "function" &&
+      matchMedia("(prefers-color-scheme: dark)").matches;
+
+    return osThemeIsDark
+      ? { name: "reverse", bg: "#f4f4f4", fg: "#020202" } // reverse of dark: black on white
+      : { name: "reverse", bg: "#020202", fg: "#f4f4f4" }; // reverse of light: white on black
+  }
+
   // Build the CSS that paints the page like a terminal pane: one background
   // showing through everywhere, one foreground color for all text.
   function buildCss(scheme) {
+    scheme = resolveScheme(scheme);
     if (!scheme) return "";
     const { bg, fg } = scheme;
     const themedElementSelector =
@@ -61,7 +75,7 @@
     ].join("\n");
   }
 
-  const api = { SCHEMES, STYLE_ID, buildCss };
+  const api = { SCHEMES, STYLE_ID, buildCss, resolveScheme };
   if (typeof self !== "undefined") self.COLORED_BG = api;
   if (typeof window !== "undefined") window.COLORED_BG = api;
 })();

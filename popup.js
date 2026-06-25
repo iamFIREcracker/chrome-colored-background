@@ -1,7 +1,7 @@
 // Popup: a tmux-style picker. Open it (toolbar click or Alt+W), then
 // press 0-6 (or click a swatch) to recolor the current page.
 (function () {
-  const { SCHEMES, STYLE_ID, buildCss } = window.COLORED_BG;
+  const { SCHEMES, STYLE_ID, buildCss, resolveScheme } = window.COLORED_BG;
 
   let tab = null;
   let originKey = null;
@@ -80,27 +80,36 @@
 
   function buildGrid() {
     const grid = document.getElementById("grid");
-    for (let i = 0; i <= 6; i++) {
+    Object.keys(SCHEMES).forEach((key) => {
+      const i = Number(key);
       const scheme = SCHEMES[i];
+      const preview = resolveScheme(scheme);
       const el = document.createElement("div");
       el.className = "swatch";
       el.dataset.idx = i;
-      el.style.background = scheme ? scheme.bg : "#2b2b2b";
-      el.style.color = scheme ? scheme.fg : "#f4f4f4";
+      el.style.background = preview ? preview.bg : "#2b2b2b";
+      el.style.color = preview ? preview.fg : "#f4f4f4";
       el.innerHTML =
         `<span class="num">${i}</span>` +
         `<span class="label">${scheme ? scheme.name : "default"}</span>`;
       el.addEventListener("click", () => apply(i));
       grid.appendChild(el);
-    }
+    });
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key >= "0" && e.key <= "6") {
+    if (SCHEMES[e.key]) {
       e.preventDefault();
       apply(Number(e.key));
     }
   });
+
+  if (typeof matchMedia === "function") {
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      document.getElementById("grid").textContent = "";
+      buildGrid();
+    });
+  }
 
   (async function init() {
     buildGrid();

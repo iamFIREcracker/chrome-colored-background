@@ -13,7 +13,7 @@ bind 1 select-pane -P "bg=color1,fg=color15"
 
 1. Open the picker — click the toolbar icon, or press **Alt+W**
    (the tmux-style "prefix").
-2. Press **0**–**6** (or click a swatch) to apply a color.
+2. Press **0**–**7** (or click a swatch) to apply a color.
 
 | Key | Colors                 |
 |-----|------------------------|
@@ -24,6 +24,11 @@ bind 1 select-pane -P "bg=color1,fg=color15"
 | 4   | blue bg / white fg     |
 | 5   | magenta bg / white fg  |
 | 6   | cyan bg / white fg     |
+| 7   | reverse OS theme       |
+
+Option **7** follows the OS theme and applies the reverse:
+dark OS theme becomes black text on white background; light OS theme becomes
+white text on black background.
 
 The choice is saved **per-origin** and re-applied on reload/navigation
 (handled by `content.js` via `chrome.storage`).
