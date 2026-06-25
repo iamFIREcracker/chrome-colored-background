@@ -1,5 +1,5 @@
 // Popup: a tmux-style picker. Open it (toolbar click or Alt+W), then
-// press 0-6 (or click a swatch) to recolor the current page.
+// press 0-7 (or click a swatch) to recolor the current page.
 (function () {
   const { SCHEMES, STYLE_ID, buildCss, resolveScheme } = window.COLORED_BG;
 
@@ -64,6 +64,7 @@
     }
 
     markActive(idx);
+    window.close();
   }
 
   function setStatus(msg, isError) {
