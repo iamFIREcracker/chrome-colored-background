@@ -4,12 +4,13 @@
 
 A small Chrome (Manifest V3) extension that gives the browser **tmux-style
 keybindings** behind a tmux-like prefix (**Alt+W**). Press the prefix, then a
-key to trigger a binding. Two binding families ship today:
+key to trigger a binding. Three binding families ship today:
 
 | Prefix    | Then…       | Family                              |
 |-----------|-------------|-------------------------------------|
 | **Alt+W** | **1**–**8** | recolor the page like a tmux pane (**0** resets) |
 | **Alt+W** | **)** / **(** | move to the next / previous tab     |
+| **Alt+W** | **q** / **c** | close the current tab / open a new one |
 
 The page-theming family is inspired by these tmux bindings:
 
@@ -33,6 +34,7 @@ bind 8 select-pane -P "bg=color0,fg=color15"
 2. Then press a key:
    - **1**–**8** (or click a swatch) to apply a color; **0** resets.
    - **)** / **(** to move to the next / previous tab.
+   - **q** / **c** to close the current tab / open a new one.
 
 ### Recolor the page
 
@@ -63,6 +65,19 @@ Navigation wraps around at the ends, like tmux's `next-window` /
 can keep tapping **)** / **(** to walk across tabs without re-pressing **Alt+W**
 (handled by `background.js`).
 
+### Manage tabs
+
+| Key | Action  |
+|-----|---------|
+| c   | new tab |
+| q   | close tab |
+
+Like `next-window` / `new-window` in tmux. After each one the picker re-opens on
+the resulting active tab — the same "held prefix" behaviour as **)** / **(** — so
+you can keep tapping without re-pressing **Alt+W**. Closing the **last** tab
+closes the window (the truer `kill-pane` analog), and **c** lands on the
+new-tab page, which theming can't touch but management keys still work on.
+
 ## Install (unpacked)
 
 1. Visit `chrome://extensions`.
@@ -81,7 +96,7 @@ can keep tapping **)** / **(** to walk across tabs without re-pressing **Alt+W**
 - `schemes.js` — color palette + CSS builder (shared by popup & content).
 - `content.js` — re-applies the saved scheme on page load.
 - `popup.js` / `popup.html` / `popup.css` — the 1–8 picker UI; 0 resets.
-- `background.js` — service worker for the `(` / `)` tab-navigation bindings.
+- `background.js` — service worker for tab navigation + management (`( ) q c`).
 
 ## Tests
 
@@ -98,12 +113,14 @@ npm run test:setup  # one-time: download the extension-capable Chromium build
 npm test            # run the suite
 ```
 
-Expected output — four passing tests:
+Expected output — six passing tests:
 
 ```
 ✔ service worker registers and openPopup() is available
 ✔ end-to-end: ) in the popup advances to the next tab (wraps last->first)
 ✔ end-to-end: ( in the popup goes to the previous tab
+✔ end-to-end: q in the popup closes the active tab and a neighbour takes over
+✔ end-to-end: c in the popup opens a new active tab
 ✔ walkTab() covers the full wrap-around matrix on a clean 3-tab strip
 ```
 
