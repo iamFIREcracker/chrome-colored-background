@@ -1,8 +1,8 @@
 {
-  "name": "colored-background",
+  "name": "prefix",
   "version": "1.0.0",
   "private": true,
-  "description": "Chrome (MV3) extension: tmux-style page theming + tab navigation.",
+  "description": "Chrome (MV3) extension: tmux-style keybindings for the browser.",
   "scripts": {
     "test": "node --test \"tests/*.test.js\"",
     "test:setup": "playwright install chromium"

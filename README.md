@@ -1,7 +1,17 @@
-# Colored Background
+# Prefix
 
-A small Chrome (Manifest V3) extension that recolors the current page's
-foreground/background like a tmux pane. Inspired by these tmux bindings:
+> tmux-style browser bindings
+
+A small Chrome (Manifest V3) extension that gives the browser **tmux-style
+keybindings** behind a tmux-like prefix (**Alt+W**). Press the prefix, then a
+key to trigger a binding. Two binding families ship today:
+
+| Prefix    | Then…       | Family                              |
+|-----------|-------------|-------------------------------------|
+| **Alt+W** | **1**–**8** | recolor the page like a tmux pane (**0** resets) |
+| **Alt+W** | **)** / **(** | move to the next / previous tab     |
+
+The page-theming family is inspired by these tmux bindings:
 
 ```
 # Colored panes

@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Colored Background",
+  "name": "Prefix",
   "version": "1.0.0",
-  "description": "Inject CSS to recolor the current page's foreground/background, tmux-style (press Alt+W, then 1-8; 0 resets).",
+  "description": "tmux-style keybindings for the browser: press Alt+W, then 1-8 to recolor the page (0 resets) or ( / ) to move between tabs.",
   "permissions": ["scripting", "activeTab", "storage", "tabs"],
   "host_permissions": ["<all_urls>"],
   "action": {
-    "default_title": "Colored Background (press 1-8; 0 resets)",
+    "default_title": "Prefix — tmux-style bindings (press Alt+W)",
     "default_popup": "popup.html"
   },
   "background": {
