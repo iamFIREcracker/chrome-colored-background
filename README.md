@@ -20,8 +20,11 @@ bind 8 select-pane -P "bg=color0,fg=color15"
 
 1. Open the picker — click the toolbar icon, or press **Alt+W**
    (the tmux-style "prefix").
-2. Press **1**–**8** (or click a swatch) to apply a color.
-   Press **0** to reset.
+2. Then press a key:
+   - **1**–**8** (or click a swatch) to apply a color; **0** resets.
+   - **)** / **(** to move to the next / previous tab.
+
+### Recolor the page
 
 | Key | Colors                 |
 |-----|------------------------|
@@ -37,6 +40,18 @@ bind 8 select-pane -P "bg=color0,fg=color15"
 
 The choice is saved **per-origin** and re-applied on reload/navigation
 (handled by `content.js` via `chrome.storage`).
+
+### Move between tabs
+
+| Key | Action            |
+|-----|-------------------|
+| )   | next tab          |
+| (   | previous tab      |
+
+Navigation wraps around at the ends, like tmux's `next-window` /
+`previous-window`. After each hop the picker re-opens on the new tab, so you
+can keep tapping **)** / **(** to walk across tabs without re-pressing **Alt+W**
+(handled by `background.js`).
 
 ## Install (unpacked)
 
