@@ -98,14 +98,22 @@
     });
   }
 
+  // Keys that delegate to the background worker. Each sends a { type, ...args }
+  // message; the worker performs the action and re-opens this popup on the
+  // resulting active tab, so you can keep tapping without re-pressing Alt+W.
+  // Don't window.close() for these — the tab change + re-open owns the lifecycle.
+  const TAB_ACTIONS = {
+    "(": { type: "walk-tab", dir: -1 },
+    ")": { type: "walk-tab", dir: 1 },
+    "q": { type: "close-tab" },
+    "c": { type: "new-tab" },
+  };
+
   document.addEventListener("keydown", (e) => {
-    // ( / ) walk to the previous/next tab. The background worker switches the
-    // tab and re-opens this popup, so you can keep tapping to walk across tabs
-    // without re-pressing Alt+W. Don't window.close() — the tab switch (and the
-    // re-open) handles the popup's lifecycle.
-    if (e.key === "(" || e.key === ")") {
+    const action = TAB_ACTIONS[e.key];
+    if (action) {
       e.preventDefault();
-      chrome.runtime.sendMessage({ type: "walk-tab", dir: e.key === ")" ? 1 : -1 });
+      chrome.runtime.sendMessage(action);
       return;
     }
     if (Object.prototype.hasOwnProperty.call(SCHEMES, e.key)) {
