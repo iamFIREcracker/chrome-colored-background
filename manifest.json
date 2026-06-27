@@ -9,6 +9,9 @@
     "default_title": "Colored Background (press 1-8; 0 resets)",
     "default_popup": "popup.html"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

@@ -99,6 +99,15 @@
   }
 
   document.addEventListener("keydown", (e) => {
+    // ( / ) walk to the previous/next tab. The background worker switches the
+    // tab and re-opens this popup, so you can keep tapping to walk across tabs
+    // without re-pressing Alt+W. Don't window.close() — the tab switch (and the
+    // re-open) handles the popup's lifecycle.
+    if (e.key === "(" || e.key === ")") {
+      e.preventDefault();
+      chrome.runtime.sendMessage({ type: "walk-tab", dir: e.key === ")" ? 1 : -1 });
+      return;
+    }
     if (Object.prototype.hasOwnProperty.call(SCHEMES, e.key)) {
       e.preventDefault();
       apply(Number(e.key));
