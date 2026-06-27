@@ -122,6 +122,53 @@ test("end-to-end: ( in the popup goes to the previous tab", async () => {
   );
 });
 
+test("end-to-end: q in the popup closes the active tab and a neighbour takes over", async () => {
+  // Use a throwaway tab so we don't disturb the a/b/c/popup strip the later
+  // wrap-around test relies on. It opens active; close it via the popup's q.
+  const victim = await ctx.newPage();
+  await victim.goto("https://example.com/?victim");
+  await waitFor(async () => (await activeUrl())?.endsWith("?victim"));
+
+  const before = await tabsInfo();
+  const victimId = before.find((t) => t.active).id;
+
+  // Dispatch q into the popup page *without* focusing it, so the victim stays
+  // the active tab — this drives the real popup.js -> background.js ->
+  // chrome.tabs.remove chain (close-tab acts on the active tab).
+  await popup.evaluate(() =>
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "q" }))
+  );
+
+  await waitFor(async () => !(await tabsInfo()).some((t) => t.id === victimId));
+
+  const after = await tabsInfo();
+  assert.ok(
+    !after.some((t) => t.id === victimId),
+    "the active tab should have been removed"
+  );
+  assert.ok(
+    after.some((t) => t.active),
+    "a neighbouring tab should become active after the close"
+  );
+});
+
+test("end-to-end: c in the popup opens a new active tab", async () => {
+  await popup.bringToFront();
+  const before = await tabsInfo();
+
+  await popup.keyboard.press("c");
+  await waitFor(async () => (await tabsInfo()).length === before.length + 1);
+
+  const after = await tabsInfo();
+  const created = after.find((t) => !before.some((b) => b.id === t.id));
+  assert.ok(created, "a new tab should have been created");
+  assert.ok(created.active, "the new tab should be the active tab");
+
+  // Clean up so the strip is back to [a, b, c, popup] for the wrap-around test.
+  await sw.evaluate((id) => chrome.tabs.remove(id), created.id);
+  await waitFor(async () => (await tabsInfo()).length === before.length);
+});
+
 test("walkTab() covers the full wrap-around matrix on a clean 3-tab strip", async () => {
   // Drop the popup tab so the strip is exactly [a, b, c] and the math is easy
   // to reason about. walkTab is called directly with a known active tab.
