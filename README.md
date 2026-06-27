@@ -56,6 +56,35 @@ The choice is saved **per-origin** and re-applied on reload/navigation
 - `schemes.js` — color palette + CSS builder (shared by popup & content).
 - `content.js` — re-applies the saved scheme on page load.
 - `popup.js` / `popup.html` / `popup.css` — the 1–8 picker UI; 0 resets.
+- `background.js` — service worker for the `(` / `)` tab-navigation bindings.
+
+## Tests
+
+Regression tests for the tab-navigation bindings live in `tests/`. They load
+the real unpacked extension into headless Chromium (via Playwright) and drive
+the actual `popup.js → background.js → chrome.tabs` chain, plus the wrap-around
+math in `walkTab()`.
+
+**Requirements:** Node 18+ and `npm`.
+
+```sh
+npm install         # one-time: install dev dependencies (Playwright)
+npm run test:setup  # one-time: download the extension-capable Chromium build
+npm test            # run the suite
+```
+
+Expected output — four passing tests:
+
+```
+✔ service worker registers and openPopup() is available
+✔ end-to-end: ) in the popup advances to the next tab (wraps last->first)
+✔ end-to-end: ( in the popup goes to the previous tab
+✔ walkTab() covers the full wrap-around matrix on a clean 3-tab strip
+```
+
+> Note: extensions only load in *headless* Chromium through Playwright's
+> `channel: "chromium"` build, which is what `npm run test:setup` downloads.
+> A regular `npm install` alone is not enough to run the suite headless.
 
 ## Customizing colors
 
