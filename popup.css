@@ -76,3 +76,50 @@ body {
 .status.error {
   color: #ff8a80;
 }
+
+.shortcuts {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+}
+
+.shortcuts-title {
+  margin: 0 0 6px;
+  color: #888;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shortcut-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shortcut-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #bbb;
+}
+
+.shortcut-list span {
+  font-size: 11px;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 9px;
+  padding: 1px 5px;
+  border: 1px solid #555;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #fff;
+  font: 600 11px/1.4 ui-monospace, monospace;
+  text-align: center;
+}
