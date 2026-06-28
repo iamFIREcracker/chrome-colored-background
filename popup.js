@@ -98,13 +98,15 @@
     });
   }
 
-  // Keys that delegate to the background worker. Each sends a { type, ...args }
-  // message; the worker performs the action and re-opens this popup on the
-  // resulting active tab, so you can keep tapping without re-pressing Alt+W.
-  // Don't window.close() for these — the tab change + re-open owns the lifecycle.
+  // Keys that delegate to the background worker. Each sends a { type, repeat, ...args }
+  // message; the worker performs the action, then — only when `repeat` is set —
+  // re-opens this popup on the resulting active tab. Repeatable commands are tmux's
+  // `bind -r`: tap the same key again without re-pressing Alt+W. One-shot commands
+  // run once and let the popup close.
+  // Don't window.close() for these — the tab change owns the lifecycle either way.
   const TAB_ACTIONS = {
-    "(": { type: "walk-tab", dir: -1 },
-    ")": { type: "walk-tab", dir: 1 },
+    "(": { type: "walk-tab", dir: -1, repeat: true },
+    ")": { type: "walk-tab", dir: 1, repeat: true },
     "q": { type: "close-tab" },
     "c": { type: "new-tab" },
   };

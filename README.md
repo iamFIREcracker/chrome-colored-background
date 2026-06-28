@@ -61,9 +61,9 @@ The choice is saved **per-origin** and re-applied on reload/navigation
 | (   | previous tab      |
 
 Navigation wraps around at the ends, like tmux's `next-window` /
-`previous-window`. After each hop the picker re-opens on the new tab, so you
-can keep tapping **)** / **(** to walk across tabs without re-pressing **Alt+W**
-(handled by `background.js`).
+`previous-window`. These are **repeatable** commands (tmux's `bind -r`): after
+each hop the picker re-opens on the new tab, so you can keep tapping **)** / **(**
+to walk across tabs without re-pressing **Alt+W** (handled by `background.js`).
 
 ### Manage tabs
 
@@ -72,11 +72,11 @@ can keep tapping **)** / **(** to walk across tabs without re-pressing **Alt+W**
 | c   | new tab |
 | q   | close tab |
 
-Like `next-window` / `new-window` in tmux. After each one the picker re-opens on
-the resulting active tab — the same "held prefix" behaviour as **)** / **(** — so
-you can keep tapping without re-pressing **Alt+W**. Closing the **last** tab
-closes the window (the truer `kill-pane` analog), and **c** lands on the
-new-tab page, which theming can't touch but management keys still work on.
+Like `kill-pane` / `new-window` in tmux. Unlike **)** / **(**, these are
+**one-shot** (not repeatable): they run once and the picker closes — re-press
+**Alt+W** for the next command. Closing the **last** tab closes the window (the
+truer `kill-pane` analog), and **c** lands on the new-tab page, which theming
+can't touch but management keys still work on.
 
 ## Install (unpacked)
 
