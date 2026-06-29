@@ -109,6 +109,7 @@
     ")": { type: "walk-tab", dir: 1, repeat: true },
     "q": { type: "close-tab" },
     "c": { type: "new-tab" },
+    "r": { type: "reload-extension" },
   };
 
   document.addEventListener("keydown", (e) => {

@@ -11,6 +11,7 @@ const COMMANDS = {
   "walk-tab": (msg) => walkTab(msg.dir),
   "close-tab": closeTab,
   "new-tab": newTab,
+  "reload-extension": reloadExtension,
 };
 
 chrome.runtime.onMessage.addListener((msg) => {
@@ -58,4 +59,14 @@ async function closeTab() {
 // c — open a fresh tab (becomes active), tmux new-window style. One-shot.
 async function newTab() {
   await chrome.tabs.create({}); // active: true is the default
+}
+
+// r — restart the extension (picks up edited code when unpacked), tmux
+// source-file style. One-shot. This tears down the service worker mid-call, so
+// nothing after it runs. It also can't update content scripts already injected
+// in open tabs — those stay on the old code (and go inert) until each tab is
+// reloaded. We deliberately don't reload tabs here; the user reloads any that
+// misbehave.
+function reloadExtension() {
+  chrome.runtime.reload();
 }
