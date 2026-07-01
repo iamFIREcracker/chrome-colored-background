@@ -4,7 +4,7 @@
   const { SCHEMES, STYLE_ID, buildCss } = window.COLORED_BG;
 
   let tab = null;
-  let originKey = null;
+  let sessionKey = null;
 
   // Injected into the page world to add/update/remove the <style> element.
   function setPageStyle(css, id) {
@@ -58,9 +58,11 @@
       }
     }
 
-    // Persist per-origin so it survives reloads (content.js re-applies).
-    if (originKey) {
-      await chrome.storage.local.set({ [originKey]: idx === 0 ? null : idx });
+    // Persist per-tab (tmux-pane style) so it survives reloads but stays local
+    // to this tab and dies with it. session storage is in-memory; tab ids are
+    // stable across reloads/discards. content.js re-applies on load.
+    if (sessionKey) {
+      await chrome.storage.session.set({ [sessionKey]: idx === 0 ? null : idx });
     }
 
     markActive(idx);
@@ -112,7 +114,19 @@
     "r": { type: "reload-extension" },
   };
 
+  // Auto-dismiss: the picker is a transient tmux-style prefix, not a window meant
+  // to linger. If you don't act, it closes itself. Every keystroke resets the
+  // countdown, so repeatable commands tapped in quick succession keep it alive —
+  // only an idle pause lets it disappear.
+  const IDLE_MS = 1500;
+  let idleTimer = null;
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => window.close(), IDLE_MS);
+  }
+
   document.addEventListener("keydown", (e) => {
+    resetIdle();
     const action = TAB_ACTIONS[e.key];
     if (action) {
       e.preventDefault();
@@ -127,13 +141,12 @@
 
   (async function init() {
     buildGrid();
+    resetIdle();
     tab = await getActiveTab();
-    try {
-      originKey = "scheme:" + new URL(tab.url).origin;
-      const data = await chrome.storage.local.get(originKey);
-      markActive(data[originKey] ?? 0);
-    } catch (e) {
-      // tab.url may be unavailable on restricted pages.
+    if (tab) {
+      sessionKey = "scheme-tab:" + tab.id;
+      const data = await chrome.storage.session.get(sessionKey);
+      markActive(data[sessionKey] ?? 0);
     }
   })();
 })();

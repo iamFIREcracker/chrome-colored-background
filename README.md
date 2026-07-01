@@ -52,8 +52,11 @@ bind 8 select-pane -P "bg=color0,fg=color15"
 | 7   | light: white bg / black fg |
 | 8   | dark: black bg / white fg  |
 
-The choice is saved **per-origin** and re-applied on reload/navigation
-(handled by `content.js` via `chrome.storage`).
+The choice is saved **per-tab**, tmux-pane style: it sticks as long as the tab
+is open (surviving reloads and navigation), stays local to that one tab, and is
+forgotten when the tab closes or the browser restarts. It's keyed by tab id in
+`chrome.storage.session`; `content.js` re-applies it on load by asking the
+background worker for its own tab's scheme.
 
 ### Move between tabs
 

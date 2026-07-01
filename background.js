@@ -14,8 +14,24 @@ const COMMANDS = {
   "reload-extension": reloadExtension,
 };
 
-chrome.runtime.onMessage.addListener((msg) => {
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!msg || !msg.type) return;
+
+  // Colors are stored per-tab (tmux-pane style). A content script can't read its
+  // own tab id, but we get it for free as sender.tab.id — so content.js asks us
+  // for its tab's scheme on load. Returns the index (or null) asynchronously, so
+  // keep the channel open by returning true.
+  if (msg.type === "get-scheme") {
+    const tabId = sender.tab && sender.tab.id;
+    if (tabId == null) {
+      sendResponse(null);
+      return;
+    }
+    const key = "scheme-tab:" + tabId;
+    chrome.storage.session.get(key, (data) => sendResponse(data[key] ?? null));
+    return true;
+  }
+
   const run = COMMANDS[msg.type];
   if (!run) return;
   // Perform the action first, then re-open the picker only if the command opted
@@ -23,6 +39,12 @@ chrome.runtime.onMessage.addListener((msg) => {
   Promise.resolve(run(msg)).then(() => {
     if (msg.repeat) reopenPicker();
   });
+});
+
+// Drop a tab's stored color when the tab closes, so session storage doesn't
+// accumulate dead entries during a long browser session.
+chrome.tabs.onRemoved.addListener((tabId) => {
+  chrome.storage.session.remove("scheme-tab:" + tabId);
 });
 
 // Re-open the picker on the freshly activated tab, so a repeatable command can

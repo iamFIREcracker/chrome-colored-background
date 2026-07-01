@@ -1,6 +1,7 @@
-// Re-apply the saved color scheme for this origin on every page load, so the
-// chosen color survives reloads and navigation (matching tmux, where a pane
-// keeps its color). Runs at document_start in every frame.
+// Re-apply this tab's saved color scheme on every page load, so the chosen
+// color survives reloads (matching tmux, where a pane keeps its color until you
+// close it). The color is keyed by tab id, not origin, so it stays local to this
+// tab and is independent of the host. Runs at document_start in every frame.
 (function () {
   const { SCHEMES, STYLE_ID, buildCss } = self.COLORED_BG;
 
@@ -18,22 +19,17 @@
     el.textContent = css;
   }
 
-  const key = "scheme:" + location.origin;
-
   function applyScheme(idx) {
     const scheme = idx == null ? null : SCHEMES[idx];
     setStyle(buildCss(scheme));
   }
 
-  chrome.storage.local.get(key, (data) => {
-    const idx = data[key];
-    if (idx === undefined || idx === null) return;
+  // A content script can't read its own tab id, so the background worker resolves
+  // it (via sender.tab.id) and returns this tab's stored scheme. The popup applies
+  // colors instantly to the active tab itself, so we only need this on (re)load.
+  chrome.runtime.sendMessage({ type: "get-scheme" }, (idx) => {
+    if (chrome.runtime.lastError) return; // worker asleep / no response
+    if (idx == null) return;
     applyScheme(idx);
-  });
-
-  // React live if the popup changes the scheme for this origin.
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== "local" || !(key in changes)) return;
-    applyScheme(changes[key].newValue);
   });
 })();
