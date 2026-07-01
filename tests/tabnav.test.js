@@ -122,9 +122,9 @@ test("end-to-end: ( in the popup goes to the previous tab", async () => {
   );
 });
 
-test("end-to-end: q in the popup closes the active tab and a neighbour takes over", async () => {
+test("end-to-end: & in the popup closes the active tab and a neighbour takes over", async () => {
   // Use a throwaway tab so we don't disturb the a/b/c/popup strip the later
-  // wrap-around test relies on. It opens active; close it via the popup's q.
+  // wrap-around test relies on. It opens active; close it via the popup's &.
   const victim = await ctx.newPage();
   await victim.goto("https://example.com/?victim");
   await waitFor(async () => (await activeUrl())?.endsWith("?victim"));
@@ -132,11 +132,11 @@ test("end-to-end: q in the popup closes the active tab and a neighbour takes ove
   const before = await tabsInfo();
   const victimId = before.find((t) => t.active).id;
 
-  // Dispatch q into the popup page *without* focusing it, so the victim stays
+  // Dispatch & into the popup page *without* focusing it, so the victim stays
   // the active tab — this drives the real popup.js -> background.js ->
   // chrome.tabs.remove chain (close-tab acts on the active tab).
   await popup.evaluate(() =>
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "q" }))
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "&" }))
   );
 
   await waitFor(async () => !(await tabsInfo()).some((t) => t.id === victimId));

@@ -10,7 +10,7 @@ key to trigger a binding. Three binding families ship today:
 |-----------|-------------|-------------------------------------|
 | **Alt+W** | **1**–**8** | recolor the page like a tmux pane (**0** resets) |
 | **Alt+W** | **)** / **(** | move to the next / previous tab     |
-| **Alt+W** | **q** / **c** | close the current tab / open a new one |
+| **Alt+W** | **&** / **c** | close the current tab / open a new one |
 | **Alt+W** | **r**         | reload the extension                |
 
 The page-theming family is inspired by these tmux bindings:
@@ -35,7 +35,7 @@ bind 8 select-pane -P "bg=color0,fg=color15"
 2. Then press a key:
    - **1**–**8** (or click a swatch) to apply a color; **0** resets.
    - **)** / **(** to move to the next / previous tab.
-   - **q** / **c** to close the current tab / open a new one.
+   - **&** / **c** to close the current tab / open a new one.
    - **r** to reload the extension.
 
 ### Recolor the page
@@ -75,7 +75,7 @@ to walk across tabs without re-pressing **Alt+W** (handled by `background.js`).
 | Key | Action  |
 |-----|---------|
 | c   | new tab |
-| q   | close tab |
+| &   | close tab |
 
 Like `kill-pane` / `new-window` in tmux. Unlike **)** / **(**, these are
 **one-shot** (not repeatable): they run once and the picker closes — re-press
@@ -115,7 +115,7 @@ simple and don't auto-reload tabs; just reload any tab that misbehaves.
 - `content.js` — re-applies the saved scheme on page load.
 - `popup.js` / `popup.html` / `popup.css` — the 1–8 picker UI; 0 resets.
 - `background.js` — service worker for tab navigation + management and the
-  extension reload (`( ) q c r`).
+  extension reload (`( ) & c r`).
 
 ## Tests
 
@@ -138,7 +138,7 @@ Expected output — six passing tests:
 ✔ service worker registers and openPopup() is available
 ✔ end-to-end: ) in the popup advances to the next tab (wraps last->first)
 ✔ end-to-end: ( in the popup goes to the previous tab
-✔ end-to-end: q in the popup closes the active tab and a neighbour takes over
+✔ end-to-end: & in the popup closes the active tab and a neighbour takes over
 ✔ end-to-end: c in the popup opens a new active tab
 ✔ walkTab() covers the full wrap-around matrix on a clean 3-tab strip
 ```

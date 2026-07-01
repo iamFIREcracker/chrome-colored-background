@@ -109,7 +109,7 @@
   const TAB_ACTIONS = {
     "(": { type: "walk-tab", dir: -1, repeat: true },
     ")": { type: "walk-tab", dir: 1, repeat: true },
-    "q": { type: "close-tab" },
+    "&": { type: "close-tab" },
     "c": { type: "new-tab" },
     "r": { type: "reload-extension" },
   };

@@ -69,7 +69,7 @@ async function walkTab(dir) {
   await chrome.tabs.update(next.id, { active: true });
 }
 
-// q — close the active tab, tmux kill-pane style. One-shot: Chrome activates a
+// & — close the active tab, tmux kill-window style. One-shot: Chrome activates a
 // neighbour automatically and the popup closes with the tab change. Closing the
 // last tab closes the window (the truer kill-pane analog).
 async function closeTab() {
